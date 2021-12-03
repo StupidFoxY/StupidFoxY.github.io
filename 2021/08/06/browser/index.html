@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>浏览器的原理相关知识点 | Tzmm的学习小总结 | 小脑袋里总记不住，看过就忘，记下来多看看</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="浏览器工作原理">
+    <meta name="description" content="01 前言作为一个合格的前端工程师，浏览器相关的工作原理是我们进行性能优化的基石，了解浏览器原理也是前端系统知识体系中的重要一环。 本文内容将会囊括浏览器的缓存，浏览器的访问流程，浏览器的本地存储，浏览器的安全问题，浏览器的跨域问题，HTTP&#x2F;HTTPS&#x2F;TCP&#x2F;IP&#x2F;UDP的区别 02 目录 常见浏览器内核 浏览器的主要组成 浏览器的缓存 浏览器的访问流程 浏览器的本地存储 浏览器的安全问题 X">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浏览器的原理相关知识点">
+<meta property="og:url" content="http://yoursite.com/2021/08/06/browser/index.html">
+<meta property="og:site_name" content="Tzmm的学习小总结">
+<meta property="og:description" content="01 前言作为一个合格的前端工程师，浏览器相关的工作原理是我们进行性能优化的基石，了解浏览器原理也是前端系统知识体系中的重要一环。 本文内容将会囊括浏览器的缓存，浏览器的访问流程，浏览器的本地存储，浏览器的安全问题，浏览器的跨域问题，HTTP&#x2F;HTTPS&#x2F;TCP&#x2F;IP&#x2F;UDP的区别 02 目录 常见浏览器内核 浏览器的主要组成 浏览器的缓存 浏览器的访问流程 浏览器的本地存储 浏览器的安全问题 X">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-08-06T01:26:44.086Z">
+<meta property="article:modified_time" content="2021-12-03T01:41:57.461Z">
+<meta property="article:author" content="Tzmm">
+<meta property="article:tag" content="浏览器工作原理">
+<meta name="twitter:card" content="summary">
+    
+        <link rel="alternate" type="application/atom+xml" title="Tzmm的学习小总结" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Tzmm</h5>
+          <a href="mailto:corgi_lyy@163.com" title="corgi_lyy@163.com" class="mail">corgi_lyy@163.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                文章
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                分类
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/StupidFoxY" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">浏览器的原理相关知识点</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">浏览器的原理相关知识点</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2021-08-06T01:26:44.086Z" itemprop="datePublished" class="page-time">
+  2021-08-06
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E6%B5%8F%E8%A7%88%E5%99%A8/">浏览器</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#01-前言"><span class="post-toc-number">1.</span> <span class="post-toc-text">01 前言</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#02-目录"><span class="post-toc-number">2.</span> <span class="post-toc-text">02 目录</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#03-常见浏览器内核"><span class="post-toc-number">3.</span> <span class="post-toc-text">03 常见浏览器内核</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#04-浏览器的主要组成"><span class="post-toc-number">4.</span> <span class="post-toc-text">04 浏览器的主要组成</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-browser"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">浏览器的原理相关知识点</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2021-08-06 09:26:44" datetime="2021-08-06T01:26:44.086Z"  itemprop="datePublished">2021-08-06</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E6%B5%8F%E8%A7%88%E5%99%A8/">浏览器</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="01-前言"><a href="#01-前言" class="headerlink" title="01 前言"></a>01 前言</h2><p>作为一个合格的前端工程师，浏览器相关的工作原理是我们进行性能优化的基石，了解浏览器原理也是前端系统知识体系中的重要一环。</p>
+<p>本文内容将会囊括<code>浏览器的缓存</code>，<code>浏览器的访问流程</code>，<code>浏览器的本地存储</code>，<code>浏览器的安全问题</code>，<code>浏览器的跨域问题</code>，<code>HTTP/HTTPS/TCP/IP/UDP的区别</code></p>
+<h2 id="02-目录"><a href="#02-目录" class="headerlink" title="02 目录"></a>02 目录</h2><ul>
+<li>常见浏览器内核</li>
+<li>浏览器的主要组成</li>
+<li><a href="https://stupidfoxy.github.io/2020/08/10/browser-cache/" target="_blank" rel="noopener">浏览器的缓存</a></li>
+<li><a href="https://stupidfoxy.github.io/2020/08/10/browser-access/" target="_blank" rel="noopener">浏览器的访问流程</a></li>
+<li><a href="">浏览器的本地存储</a></li>
+<li>浏览器的安全问题<ul>
+<li><a href="https://stupidfoxy.github.io/2020/07/29/xss/" target="_blank" rel="noopener">XSS攻击</a></li>
+<li><a href="https://stupidfoxy.github.io/2020/07/30/csrf/" target="_blank" rel="noopener">CSRF攻击</a></li>
+</ul>
+</li>
+<li><a href="https://stupidfoxy.github.io/2020/07/24/cross-origin/" target="_blank" rel="noopener">浏览器的跨域问题</a></li>
+<li><a href="">HTTP/HTTPS/TCP/IP/UDP的区别</a></li>
+</ul>
+<h2 id="03-常见浏览器内核"><a href="#03-常见浏览器内核" class="headerlink" title="03 常见浏览器内核"></a>03 常见浏览器内核</h2><table>
+<thead>
+<tr>
+<th>浏览器/RunTime</th>
+<th>内核（渲染引擎）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Chrome</td>
+<td>webkit -&gt; blink</td>
+</tr>
+<tr>
+<td>FireFox</td>
+<td>Gecko</td>
+</tr>
+<tr>
+<td>Safari</td>
+<td>Webkit</td>
+</tr>
+<tr>
+<td>IE</td>
+<td>Trident</td>
+</tr>
+<tr>
+<td>Edge</td>
+<td>EdgeHTML</td>
+</tr>
+<tr>
+<td>Opera</td>
+<td>Presto -&gt; blink</td>
+</tr>
+</tbody></table>
+<h2 id="04-浏览器的主要组成"><a href="#04-浏览器的主要组成" class="headerlink" title="04 浏览器的主要组成"></a>04 浏览器的主要组成</h2><ul>
+<li><strong>「用户界面」</strong> - 包括地址栏、前进/后退按钮、书签菜单等。</li>
+<li><strong>「浏览器引擎」</strong> - 在用户界面和呈现引擎之间传送指令。</li>
+<li><strong>「呈现引擎」</strong> - 负责显示请求的内容。如果请求的内容是 HTML，它就负责解析 HTML 和 CSS 内容，并将解析后的内容显示在屏幕上。</li>
+<li><strong>「网络」</strong> - 用于网络调用，比如 HTTP 请求。「用户界面后端」 -用于绘制基本的窗口小部件，比如组合框和窗口。</li>
+<li><strong>「JavaScript 解释器」</strong>- 用于解析和执行 JavaScript 代码。</li>
+<li><strong>「数据存储」</strong> - 这是持久层。浏览器需要在硬盘上保存各种数据，例如 Cookie。新的 HTML 规范 (HTML5) 定义了“网络数据库”，这是一个完整（但是轻便）的浏览器内数据库。</li>
+</ul>
+<blockquote>
+<p>值得注意的是，和大多数浏览器不同，Chrome 浏览器的每个标签页都分别对应一个呈现引擎实例。每个标签页都是一个独立的进程。</p>
+</blockquote>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2021-12-03T01:41:57.461Z" itemprop="dateUpdated">2021-12-03 09:41:57</time>
+</span><br>
+
+
+        
+        谢谢阅读，如有错误请邮件指出  corgi_lyy@163.com
+        
+    </div>
+    
+    <footer>
+        <a href="http://yoursite.com">
+            <img src="/img/avatar.jpg" alt="Tzmm">
+            Tzmm
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" rel="tag">浏览器工作原理</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2021/08/06/browser/&title=《浏览器的原理相关知识点》 — Tzmm的学习小总结&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2021/08/06/browser/&title=《浏览器的原理相关知识点》 — Tzmm的学习小总结&source=紧跟前端潮流，囊括前端开发、Python开发等技术文章！" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2021/08/06/browser/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《浏览器的原理相关知识点》 — Tzmm的学习小总结&url=http://yoursite.com/2021/08/06/browser/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2021/08/06/browser/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2021/08/09/execution-context/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JavaScript的执行上下文和执行栈[未完成]</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2021/08/06/closure/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">谈谈闭包的知识点</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢阅读~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Tzmm &copy; 2020 - 2021</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2021/08/06/browser/&title=《浏览器的原理相关知识点》 — Tzmm的学习小总结&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2021/08/06/browser/&title=《浏览器的原理相关知识点》 — Tzmm的学习小总结&source=紧跟前端潮流，囊括前端开发、Python开发等技术文章！" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2021/08/06/browser/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《浏览器的原理相关知识点》 — Tzmm的学习小总结&url=http://yoursite.com/2021/08/06/browser/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2021/08/06/browser/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=http://yoursite.com/2021/08/06/browser/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>

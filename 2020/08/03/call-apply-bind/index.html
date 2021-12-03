@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>详细的谈一谈apply, call, bind | Tzmm的学习小总结 | 小脑袋里总记不住，看过就忘，记下来多看看</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="手写API">
+    <meta name="description" content="01 前言这又是一个面试经典问题，也是 ES5 中众多坑中的一个。虽然在 ES6 中可能会极大避免 this 产生的错误，但是为了一些老代码的维护，详细的了解一下 this 的指向和 call、apply、bind 三者的区别还是很有必要的。 02 this的指向了解call，apply，bind之前我们先来了解下js中 this 的指向。其实 this 的指向，始终坚持一个原理： this 永远">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详细的谈一谈apply, call, bind">
+<meta property="og:url" content="http://yoursite.com/2020/08/03/call-apply-bind/index.html">
+<meta property="og:site_name" content="Tzmm的学习小总结">
+<meta property="og:description" content="01 前言这又是一个面试经典问题，也是 ES5 中众多坑中的一个。虽然在 ES6 中可能会极大避免 this 产生的错误，但是为了一些老代码的维护，详细的了解一下 this 的指向和 call、apply、bind 三者的区别还是很有必要的。 02 this的指向了解call，apply，bind之前我们先来了解下js中 this 的指向。其实 this 的指向，始终坚持一个原理： this 永远">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-08-03T07:51:22.000Z">
+<meta property="article:modified_time" content="2021-08-06T02:02:25.359Z">
+<meta property="article:author" content="Tzmm">
+<meta property="article:tag" content="手写API">
+<meta name="twitter:card" content="summary">
+    
+        <link rel="alternate" type="application/atom+xml" title="Tzmm的学习小总结" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Tzmm</h5>
+          <a href="mailto:corgi_lyy@163.com" title="corgi_lyy@163.com" class="mail">corgi_lyy@163.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                文章
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                分类
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/StupidFoxY" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">详细的谈一谈apply, call, bind</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">详细的谈一谈apply, call, bind</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-08-03T07:51:22.000Z" itemprop="datePublished" class="page-time">
+  2020-08-03
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JavaScript/">JavaScript</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#01-前言"><span class="post-toc-number">1.</span> <span class="post-toc-text">01 前言</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#02-this的指向"><span class="post-toc-number">2.</span> <span class="post-toc-text">02 this的指向</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#全局上下文"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">全局上下文</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#直接调用函数"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">直接调用函数</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#对象-方法-调用"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">对象.方法 调用</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#DOM事件绑定"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">DOM事件绑定</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#new构造函数"><span class="post-toc-number">2.5.</span> <span class="post-toc-text">new构造函数</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#箭头函数"><span class="post-toc-number">2.6.</span> <span class="post-toc-text">箭头函数</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#03-apply，call，bind"><span class="post-toc-number">3.</span> <span class="post-toc-text">03 apply，call，bind</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#apply"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">apply</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#call"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">call</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#bind"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">bind</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#三者区别"><span class="post-toc-number">3.4.</span> <span class="post-toc-text">三者区别</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#04-手写模拟实现apply方法"><span class="post-toc-number">4.</span> <span class="post-toc-text">04 手写模拟实现apply方法</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#05-手写模拟实现call方法"><span class="post-toc-number">5.</span> <span class="post-toc-text">05 手写模拟实现call方法</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#06-手写模拟实现bind方法"><span class="post-toc-number">6.</span> <span class="post-toc-text">06 手写模拟实现bind方法</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-call-apply-bind"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">详细的谈一谈apply, call, bind</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-08-03 15:51:22" datetime="2020-08-03T07:51:22.000Z"  itemprop="datePublished">2020-08-03</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JavaScript/">JavaScript</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="01-前言"><a href="#01-前言" class="headerlink" title="01 前言"></a>01 前言</h2><p>这又是一个面试经典问题，也是 ES5 中众多坑中的一个。虽然在 ES6 中可能会极大避免 this 产生的错误，但是为了一些老代码的维护，详细的了解一下 this 的指向和 call、apply、bind 三者的区别还是很有必要的。</p>
+<h2 id="02-this的指向"><a href="#02-this的指向" class="headerlink" title="02 this的指向"></a>02 this的指向</h2><p>了解call，apply，bind之前我们先来了解下js中 this 的指向。其实 this 的指向，始终坚持一个原理： <strong>this 永远指向最后调用它的那个对象。</strong></p>
+<p>下面我们就来讨论下这些场隐式绑定的场景this指向:</p>
+<ul>
+<li>全局上下文</li>
+<li>直接调用函数</li>
+<li>对象.方法的形式调用</li>
+<li>DOM事件绑定(特殊)</li>
+<li>new构造函数绑定</li>
+<li>箭头函数</li>
+</ul>
+<h3 id="全局上下文"><a href="#全局上下文" class="headerlink" title="全局上下文"></a>全局上下文</h3><p>全局上下文默认this指向window, 严格模式下指向undefined。</p>
+<h3 id="直接调用函数"><a href="#直接调用函数" class="headerlink" title="直接调用函数"></a>直接调用函数</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">  a: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> func = obj.a;</span><br><span class="line">func();</span><br></pre></td></tr></table></figure>
+<p>这种直接调用函数的情况。this相当于全局上下文的情况，默认指向window。</p>
+<h3 id="对象-方法-调用"><a href="#对象-方法-调用" class="headerlink" title="对象.方法 调用"></a>对象.方法 调用</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">  a: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">obj.a();</span><br></pre></td></tr></table></figure>
+<p>这种<code>对象.方法</code>的调用情况。this指向的是这个对象。</p>
+<h3 id="DOM事件绑定"><a href="#DOM事件绑定" class="headerlink" title="DOM事件绑定"></a>DOM事件绑定</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">onclick</span>=<span class="string">"myClick()"</span>&gt;</span>123<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> dom = <span class="built_in">document</span>.querySelector(<span class="string">'div'</span>);</span><br><span class="line">dom.addEventerListener(<span class="string">'click'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="keyword">this</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">myClick</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>addEventerListener</code>中 this 默认指向绑定事件的元素。</li>
+<li><code>onclick</code>等系列事件和IE中使用的<code>attachEvent</code>默认this指向window。</li>
+</ul>
+<h3 id="new构造函数"><a href="#new构造函数" class="headerlink" title="new构造函数"></a>new构造函数</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.age = <span class="number">6</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> tz = <span class="keyword">new</span> Person(<span class="string">'Tz'</span>);</span><br></pre></td></tr></table></figure>
+<p>此时构造函数中的this指向实例对象(tz)。</p>
+<h3 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h3><p>箭头函数没有this, 因此也不能绑定。里面的this会指向当前最近的非箭头函数的this，找不到就是window(严格模式是undefined)。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">  a: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">do</span> = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">do</span>();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">obj.a();</span><br></pre></td></tr></table></figure>
+<p>this找到最近的非箭头函数是a方法，a现在绑定着obj, 因此箭头函数中的this是obj。</p>
+<h2 id="03-apply，call，bind"><a href="#03-apply，call，bind" class="headerlink" title="03 apply，call，bind"></a>03 apply，call，bind</h2><p>bind，call，apply都是用于显性的绑定this，从而改变this的指向。</p>
+<h3 id="apply"><a href="#apply" class="headerlink" title="apply"></a>apply</h3><p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/apply" target="_blank" rel="noopener">MDN</a>给出的定义是：</p>
+<blockquote>
+<p>apply() 方法调用一个函数, 其具有一个指定的this值，以及作为 <strong>一个数组（或类似数组的对象）</strong> 提供的参数</p>
+</blockquote>
+<p>语法：</p>
+<blockquote>
+<p>func.apply(thisArg, [argsArray])</p>
+</blockquote>
+<ul>
+<li><code>thisArg</code> 必选。在 func 函数运行时使用的 this 值。请注意，this可能不是该方法看到的实际值：如果这个函数处于非严格模式下，则指定为 null 或 undefined 时会自动替换为指向全局对象，原始值会被包装。</li>
+<li><code>argsArray</code> 可选。一个数组或者类数组对象，其中的数组元素将作为单独的参数传给 func 函数。如果该参数的值为 null 或  undefined，则表示不需要传入任何参数。从ECMAScript 5 开始可以使用类数组对象。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Product</span>(<span class="params">name, price</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.price = price;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Food</span>(<span class="params">arr</span>) </span>&#123;</span><br><span class="line">  Product.apply(<span class="keyword">this</span>, arr); <span class="comment">//this指向实例对象food</span></span><br><span class="line">  <span class="keyword">this</span>.category = <span class="string">'food'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> food = <span class="keyword">new</span> Food([<span class="string">'cheese'</span>, <span class="number">5</span>])</span><br></pre></td></tr></table></figure>
+
+<h3 id="call"><a href="#call" class="headerlink" title="call"></a>call</h3><p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/call" target="_blank" rel="noopener">MDN</a>给出的定义是：</p>
+<blockquote>
+<p>call() 方法使用一个指定的 this 值和单独给出的 <strong>一个或多个参数</strong> 来调用一个函数。</p>
+</blockquote>
+<p>语法：</p>
+<blockquote>
+<p>function.call(thisArg, arg1, arg2, …)</p>
+</blockquote>
+<ul>
+<li><code>thisArg</code> 可选。在 function 函数运行时使用的 this 值。请注意，this可能不是该方法看到的实际值：如果这个函数处于非严格模式下，则指定为 null 或 undefined 时会自动替换为指向全局对象，原始值会被包装。</li>
+<li><code>arg1, arg2, ...</code> 指定的参数列表。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Product</span>(<span class="params">name, price</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.price = price;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Food</span>(<span class="params">name, price</span>) </span>&#123;</span><br><span class="line">  Product.call(<span class="keyword">this</span>, name, price); <span class="comment">//this指向实例对象food</span></span><br><span class="line">  <span class="keyword">this</span>.category = <span class="string">'food'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> food = <span class="keyword">new</span> Food(<span class="string">'cheese'</span>, <span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="bind"><a href="#bind" class="headerlink" title="bind"></a>bind</h3><p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/call" target="_blank" rel="noopener">MDN</a>给出的定义是：</p>
+<blockquote>
+<p>bind() 方法创建一个新的函数，在 bind() <strong>被调用时</strong>，这个新函数的 this 被指定为 bind() 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。</p>
+</blockquote>
+<p>语法：</p>
+<blockquote>
+<p>function.bind(thisArg[, arg1[, arg2[, …]]])</p>
+</blockquote>
+<ul>
+<li><code>thisArg</code> 调用绑定函数时作为 this 参数传递给目标函数的值。 如果使用new运算符构造绑定函数，则忽略该值。当使用 bind 在 setTimeout 中创建一个函数（作为回调提供）时，作为 thisArg 传递的任何原始值都将转换为 object。如果 bind 函数的参数列表为空，或者thisArg是null或undefined，执行作用域的 this 将被视为新函数的 thisArg。</li>
+<li><code>arg1, arg2, ...</code> 当目标函数被调用时，被预置入绑定函数的参数列表中的参数。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Product</span>(<span class="params">name, price</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.price = price;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Food</span>(<span class="params">name, price</span>) </span>&#123;</span><br><span class="line">  Product.bind(<span class="keyword">this</span>, name, price)(); <span class="comment">//this指向实例对象food</span></span><br><span class="line">  <span class="keyword">this</span>.category = <span class="string">'food'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> food = <span class="keyword">new</span> Food(<span class="string">'cheese'</span>, <span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="三者区别"><a href="#三者区别" class="headerlink" title="三者区别"></a>三者区别</h3><ul>
+<li>apply 使用 <strong>数组</strong> 作为参数；</li>
+<li>call 使用 <strong>参数列表</strong> 作为参数；</li>
+<li>bind 使用 <strong>参数列表</strong> 作为参数，且创建了一个新的函数，需要 <strong>被调用</strong> 才会起作用。</li>
+</ul>
+<h2 id="04-手写模拟实现apply方法"><a href="#04-手写模拟实现apply方法" class="headerlink" title="04 手写模拟实现apply方法"></a>04 手写模拟实现apply方法</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.myapply = <span class="function"><span class="keyword">function</span> (<span class="params">thisArg, args</span>) </span>&#123;</span><br><span class="line">  thisArg = <span class="built_in">Object</span>(thisArg) || <span class="built_in">window</span>;</span><br><span class="line">  <span class="keyword">let</span> fn = <span class="built_in">Symbol</span>();</span><br><span class="line">  thisArg[fn] = <span class="keyword">this</span>;</span><br><span class="line">  <span class="keyword">let</span> result = thisArg[fn](...args);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">delete</span> thisArg[fn];</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//test</span></span><br><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">  a: <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params">x1, x2</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(x1, x2)  <span class="comment">//2, 3</span></span><br><span class="line">  <span class="built_in">console</span>.log(<span class="keyword">this</span>.a)  <span class="comment">//1</span></span><br><span class="line">&#125;</span><br><span class="line">test.myapply(obj, [<span class="number">2</span>, <span class="number">3</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="05-手写模拟实现call方法"><a href="#05-手写模拟实现call方法" class="headerlink" title="05 手写模拟实现call方法"></a>05 手写模拟实现call方法</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.mycall = <span class="function"><span class="keyword">function</span> (<span class="params">thisArg, ...args</span>) </span>&#123;</span><br><span class="line">  thisArg = <span class="built_in">Object</span>(thisArg) || <span class="built_in">window</span>;</span><br><span class="line">  <span class="keyword">let</span> fn = <span class="built_in">Symbol</span>();</span><br><span class="line">  thisArg[fn] = <span class="keyword">this</span>;</span><br><span class="line">  <span class="keyword">let</span> result = thisArg[fn](...args);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">delete</span> thisArg[fn];</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//test</span></span><br><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">  a: <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params">x1, x2</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(x1, x2)  <span class="comment">//2, 3</span></span><br><span class="line">  <span class="built_in">console</span>.log(<span class="keyword">this</span>.a)  <span class="comment">//1</span></span><br><span class="line">&#125;</span><br><span class="line">test.mycall(obj, <span class="number">2</span>, <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="06-手写模拟实现bind方法"><a href="#06-手写模拟实现bind方法" class="headerlink" title="06 手写模拟实现bind方法"></a>06 手写模拟实现bind方法</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.mybind = <span class="function"><span class="keyword">function</span>(<span class="params">thisArg, ...args</span>)</span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">...newArgs</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.call(thisArg, ...args, ...newArgs)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// test</span></span><br><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">  a: <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params">x1, x2</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(x1, x2)  <span class="comment">//2, 3</span></span><br><span class="line">  <span class="built_in">console</span>.log(<span class="keyword">this</span>.a)  <span class="comment">//1</span></span><br><span class="line">&#125;</span><br><span class="line">test.mybind(obj, <span class="number">2</span>, <span class="number">3</span>)()</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2021-08-06T02:02:25.359Z" itemprop="dateUpdated">2021-08-06 10:02:25</time>
+</span><br>
+
+
+        
+        谢谢阅读，如有错误请邮件指出  corgi_lyy@163.com
+        
+    </div>
+    
+    <footer>
+        <a href="http://yoursite.com">
+            <img src="/img/avatar.jpg" alt="Tzmm">
+            Tzmm
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%89%8B%E5%86%99API/" rel="tag">手写API</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/08/03/call-apply-bind/&title=《详细的谈一谈apply, call, bind》 — Tzmm的学习小总结&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/08/03/call-apply-bind/&title=《详细的谈一谈apply, call, bind》 — Tzmm的学习小总结&source=紧跟前端潮流，囊括前端开发、Python开发等技术文章！" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2020/08/03/call-apply-bind/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《详细的谈一谈apply, call, bind》 — Tzmm的学习小总结&url=http://yoursite.com/2020/08/03/call-apply-bind/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2020/08/03/call-apply-bind/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2020/08/10/browser-cache/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">浏览器的缓存原理，你都知道吗</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2020/07/30/csrf/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">说一说 CSRF 攻击</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢阅读~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Tzmm &copy; 2020 - 2021</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/08/03/call-apply-bind/&title=《详细的谈一谈apply, call, bind》 — Tzmm的学习小总结&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/08/03/call-apply-bind/&title=《详细的谈一谈apply, call, bind》 — Tzmm的学习小总结&source=紧跟前端潮流，囊括前端开发、Python开发等技术文章！" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2020/08/03/call-apply-bind/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《详细的谈一谈apply, call, bind》 — Tzmm的学习小总结&url=http://yoursite.com/2020/08/03/call-apply-bind/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2020/08/03/call-apply-bind/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=http://yoursite.com/2020/08/03/call-apply-bind/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>

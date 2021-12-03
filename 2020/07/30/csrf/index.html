@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>说一说 CSRF 攻击 | Tzmm的学习小总结 | 小脑袋里总记不住，看过就忘，记下来多看看</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="网络安全,web攻击">
+    <meta name="description" content="01 前言Web开发离不开安全这个话题，确保网站或者网页应用的安全性，是每个开发人员都应该了解的事。今天我们就来了解下 CSRF 攻击。 02 什么是 CSRF 攻击CSRF 全称是 Cross-site request forgery，翻译过来就是 “跨站请求伪造”，是指引诱用户打开第三方网站，在第三方网站中利用用户的登录状态发起的跨站请求。 一般的情况下，点开一个诱导你的链接，黑客会在你不知情">
+<meta property="og:type" content="article">
+<meta property="og:title" content="说一说 CSRF 攻击">
+<meta property="og:url" content="http://yoursite.com/2020/07/30/csrf/index.html">
+<meta property="og:site_name" content="Tzmm的学习小总结">
+<meta property="og:description" content="01 前言Web开发离不开安全这个话题，确保网站或者网页应用的安全性，是每个开发人员都应该了解的事。今天我们就来了解下 CSRF 攻击。 02 什么是 CSRF 攻击CSRF 全称是 Cross-site request forgery，翻译过来就是 “跨站请求伪造”，是指引诱用户打开第三方网站，在第三方网站中利用用户的登录状态发起的跨站请求。 一般的情况下，点开一个诱导你的链接，黑客会在你不知情">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-07-30T01:52:43.000Z">
+<meta property="article:modified_time" content="2021-12-03T01:39:55.950Z">
+<meta property="article:author" content="Tzmm">
+<meta property="article:tag" content="网络安全">
+<meta property="article:tag" content="web攻击">
+<meta name="twitter:card" content="summary">
+    
+        <link rel="alternate" type="application/atom+xml" title="Tzmm的学习小总结" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Tzmm</h5>
+          <a href="mailto:corgi_lyy@163.com" title="corgi_lyy@163.com" class="mail">corgi_lyy@163.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                文章
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                分类
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/StupidFoxY" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">说一说 CSRF 攻击</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">说一说 CSRF 攻击</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-07-30T01:52:43.000Z" itemprop="datePublished" class="page-time">
+  2020-07-30
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#01-前言"><span class="post-toc-number">1.</span> <span class="post-toc-text">01 前言</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#02-什么是-CSRF-攻击"><span class="post-toc-number">2.</span> <span class="post-toc-text">02 什么是 CSRF 攻击</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-自动发起-Get-请求"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">1.自动发起 Get 请求</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-自动发起-Post-请求"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">2.自动发起 Post 请求</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#3-诱导点击发送-GET-请求"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">3.诱导点击发送 GET 请求</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#03-如何防范-CSRF-攻击"><span class="post-toc-number">3.</span> <span class="post-toc-text">03 如何防范 CSRF 攻击</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-验证站点来源"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">1.验证站点来源</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-利用Cookie的SameSite属性"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">2.利用Cookie的SameSite属性</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#3-CSRF-Token"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">3.CSRF Token</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#04-总结"><span class="post-toc-number">4.</span> <span class="post-toc-text">04 总结</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-csrf"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">说一说 CSRF 攻击</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-07-30 09:52:43" datetime="2020-07-30T01:52:43.000Z"  itemprop="datePublished">2020-07-30</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="01-前言"><a href="#01-前言" class="headerlink" title="01 前言"></a>01 前言</h2><p>Web开发离不开安全这个话题，确保网站或者网页应用的安全性，是每个开发人员都应该了解的事。今天我们就来了解下 CSRF 攻击。</p>
+<h2 id="02-什么是-CSRF-攻击"><a href="#02-什么是-CSRF-攻击" class="headerlink" title="02 什么是 CSRF 攻击"></a>02 什么是 CSRF 攻击</h2><p>CSRF 全称是 <strong>Cross-site request forgery</strong>，翻译过来就是 <strong>“跨站请求伪造”</strong>，是指引诱用户打开第三方网站，在第三方网站中利用用户的登录状态发起的跨站请求。</p>
+<p>一般的情况下，点开一个诱导你的链接，黑客会在你不知情的时候做哪些事情呢？</p>
+<h3 id="1-自动发起-Get-请求"><a href="#1-自动发起-Get-请求" class="headerlink" title="1.自动发起 Get 请求"></a>1.自动发起 Get 请求</h3><p>黑客网页里面可能有一段这样的代码</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"https://xxx.com/info?user=xxx&amp;count=100"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在用户访问含有这个img的页面后，浏览器会自动向 <a href="https://xxx.com" target="_blank" rel="noopener">https://xxx.com</a> 发送 Get 请求。如果用户已经登录，那么此次请求将会带上 cookie 信息。</p>
+<p>假如服务器端没有相应的验证机制，那么服务器会认为发请求的是一个正常的用户。因为携带了相应的 cookie，具有进行相应操作的权限，那么黑客就可以进行转账汇款等恶意操作。</p>
+<h3 id="2-自动发起-Post-请求"><a href="#2-自动发起-Post-请求" class="headerlink" title="2.自动发起 Post 请求"></a>2.自动发起 Post 请求</h3><p>黑客可能自己填了一个表单，写了一段自动提交的脚本。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">id</span>=<span class="string">'hacker-form'</span> <span class="attr">action</span>=<span class="string">"https://xxx.com/info"</span> <span class="attr">method</span>=<span class="string">"POST"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"user"</span> <span class="attr">value</span>=<span class="string">"xxx"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"count"</span> <span class="attr">value</span>=<span class="string">"100"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">document</span>.getElementById(<span class="string">'hacker-form'</span>).submit();</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>同样也会携带相应的用户 cookie 信息，让服务器误以为是一个正常的用户在操作，让各种恶意的操作变为可能。</p>
+<h3 id="3-诱导点击发送-GET-请求"><a href="#3-诱导点击发送-GET-请求" class="headerlink" title="3.诱导点击发送 GET 请求"></a>3.诱导点击发送 GET 请求</h3><p>这种需要诱导用户去点击链接才会触发，这类的情况比如在论坛中发布照片，照片中嵌入了恶意链接，或者是以广告的形式去诱导，比如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"https://xxx/info?user=xxx&amp;count=100"</span> <span class="attr">taget</span>=<span class="string">"_blank"</span>&gt;</span>enter<span class="tag">&lt;<span class="name">a</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>用户点击后，自动发送 get 请求，后续操作 <strong>自动发 GET 请求</strong> 部分同理。</p>
+<p>以上三种情况，就是 CSRF 攻击原理，跟 XSS 对比的话，CSRF 攻击并不需要将恶意代码注入 HTML 中，而是跳转新的页面，利用 <strong>服务器的验证漏洞</strong> 和 <strong>用户之前的登录状态</strong> 来模拟用户进行操作</p>
+<h2 id="03-如何防范-CSRF-攻击"><a href="#03-如何防范-CSRF-攻击" class="headerlink" title="03 如何防范 CSRF 攻击"></a>03 如何防范 CSRF 攻击</h2><p>从 CSRF 的攻击原理中我们不难发现，黑客只能借助用户的 <strong>cookie</strong> 骗取服务器的信任，但由于浏览器同源策略的限制，黑客并不能对cookie的内容进行解析。</p>
+<p>这就告诉我们，我们要保护的对象是那些可以直接产生数据改变的服务，而对于读取数据的服务，则不需要进行CSR的保护。而保护的关键是 <strong>在请求中放入黑客所不能伪造的信息</strong>，即 <strong>用户操作的验证机制</strong></p>
+<h3 id="1-验证站点来源"><a href="#1-验证站点来源" class="headerlink" title="1.验证站点来源"></a>1.验证站点来源</h3><p>在服务器端验证请求来源的站点，由于大量的CSRF攻击来自第三方站点，因此可以设置服务器跨域禁止来自第三方站点的请求，主要通过HTTP请求头中的两个字段</p>
+<ul>
+<li>Origin</li>
+<li>Referer</li>
+</ul>
+<p>其中，<strong>Origin</strong> 只包含<code>域名信息</code>，而 <strong>Referer</strong> 包含了具体的<code>URL 路径</code>。服务器可以通过解析这两个Header中的域名，确定请求的来源域。</p>
+<p>但是这两者都是可以伪造的，通过AJax中自定义请求头即可，因此安全性略差。</p>
+<h3 id="2-利用Cookie的SameSite属性"><a href="#2-利用Cookie的SameSite属性" class="headerlink" title="2.利用Cookie的SameSite属性"></a>2.利用Cookie的SameSite属性</h3><p>SameSite可以设置为三个值：<code>Strict</code>、<code>Lax</code>和<code>None</code>。</p>
+<ul>
+<li>在Strict模式下，浏览器完全禁止第三方请求携带Cookie。比如请求xxx.com网站只能在xxx.com域名当中请求才能携带 Cookie，在其他网站请求都不能。</li>
+<li>在Lax模式，就宽松一点了，但是只能在<code>get 方法提交表单</code>或者<code>a 标签发送 get 请求</code>的情况下可以携带 Cookie，其他情况均不能。</li>
+<li>在None模式下，Cookie将在所有上下文中发送，即允许跨域发送。</li>
+</ul>
+<h3 id="3-CSRF-Token"><a href="#3-CSRF-Token" class="headerlink" title="3.CSRF Token"></a>3.CSRF Token</h3><p>Token(令牌)做为Web领域验证身份是一个不错的选择，Token的步骤如下：</p>
+<ul>
+<li>第一步: 将CSRF Token输出到页面中。</li>
+<li>第二步: 页面提交的请求携带这个Token。</li>
+<li>第三步: 服务器验证Token是否正确，如果不合法则不予响应。</li>
+</ul>
+<h2 id="04-总结"><a href="#04-总结" class="headerlink" title="04 总结"></a>04 总结</h2><p>CSRF(Cross-site request forgery), 即跨站请求伪造，指的是黑客诱导用户点击链接，打开黑客的网站，然后黑客利用用户目前的登录状态发起跨站请求。</p>
+<p>CSRF攻击一般会有三种方式:</p>
+<ul>
+<li>自动 GET 请求</li>
+<li>自动 POST 请求</li>
+<li>诱导点击发送 GET 请求</li>
+</ul>
+<p>防范措施:</p>
+<ul>
+<li>验证来源站点</li>
+<li>利用 Cookie 的 SameSite 属性</li>
+<li>CSRF Token。</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2021-12-03T01:39:55.950Z" itemprop="dateUpdated">2021-12-03 09:39:55</time>
+</span><br>
+
+
+        
+        谢谢阅读，如有错误请邮件指出  corgi_lyy@163.com
+        
+    </div>
+    
+    <footer>
+        <a href="http://yoursite.com">
+            <img src="/img/avatar.jpg" alt="Tzmm">
+            Tzmm
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web%E6%94%BB%E5%87%BB/" rel="tag">web攻击</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" rel="tag">网络安全</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/07/30/csrf/&title=《说一说 CSRF 攻击》 — Tzmm的学习小总结&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/07/30/csrf/&title=《说一说 CSRF 攻击》 — Tzmm的学习小总结&source=紧跟前端潮流，囊括前端开发、Python开发等技术文章！" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2020/07/30/csrf/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《说一说 CSRF 攻击》 — Tzmm的学习小总结&url=http://yoursite.com/2020/07/30/csrf/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2020/07/30/csrf/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2020/08/03/call-apply-bind/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">详细的谈一谈apply, call, bind</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2020/07/29/xss/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">谈一谈XSS攻击</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢阅读~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Tzmm &copy; 2020 - 2021</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/07/30/csrf/&title=《说一说 CSRF 攻击》 — Tzmm的学习小总结&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/07/30/csrf/&title=《说一说 CSRF 攻击》 — Tzmm的学习小总结&source=紧跟前端潮流，囊括前端开发、Python开发等技术文章！" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2020/07/30/csrf/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《说一说 CSRF 攻击》 — Tzmm的学习小总结&url=http://yoursite.com/2020/07/30/csrf/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2020/07/30/csrf/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=http://yoursite.com/2020/07/30/csrf/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>
